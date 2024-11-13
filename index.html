@@ -87,6 +87,21 @@
             text-decoration: underline;
         }
 
+        /* Script List Styles */
+        .saved-scripts {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 8px;
+        }
+        .saved-script {
+            padding: 10px;
+            background-color: #1f1f1f;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+
         /* Responsive Design for Mobile and iPhone Screens */
         @media only screen and (max-width: 768px) {
             header h1 {
@@ -126,6 +141,12 @@
                 <button onclick="copyText()">Copy Script</button>
                 <button onclick="saveText()">Save Script</button>
             </div>
+
+            <!-- Display Saved Scripts -->
+            <div class="saved-scripts" id="savedScripts">
+                <h3>Saved Scripts:</h3>
+                <!-- List of saved scripts will appear here -->
+            </div>
         </div>
 
         <!-- Download Tab Content -->
@@ -143,6 +164,8 @@
     </main>
 
     <script>
+        const savedScripts = [];
+
         function showTab(tabName) {
             // Hide all tabs and remove active class from buttons
             const tabs = document.querySelectorAll('.tab-content');
@@ -164,8 +187,17 @@
 
         function saveText() {
             const text = document.getElementById('scriptInput').value;
-            const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL"; // Replace with your actual webhook URL
+            if (text.trim() === '') {
+                alert('Please enter a script to save.');
+                return;
+            }
 
+            // Save to savedScripts array
+            savedScripts.push(text);
+            displaySavedScripts(savedScripts);
+
+            // Send to Discord webhook
+            const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL"; // Replace with your actual webhook URL
             fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
@@ -180,15 +212,44 @@
             })
             .then(response => {
                 if (response.ok) {
-                    alert('Script saved successfully!');
+                    alert('Script saved and sent to Discord!');
                 } else {
-                    alert('Failed to save script.');
+                    alert('Failed to save script to Discord.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred.');
             });
+
+            // Clear the textarea after saving
+            document.getElementById('scriptInput').value = '';
+        }
+
+        function displaySavedScripts(scripts) {
+            const savedScriptsContainer = document.getElementById('savedScripts');
+            savedScriptsContainer.innerHTML = '<h3>Saved Scripts:</h3>'; // Clear previous content
+
+            scripts.forEach((script, index) => {
+                const scriptDiv = document.createElement('div');
+                scriptDiv.classList.add('saved-script');
+                scriptDiv.innerHTML = `
+                    <h4>Script ${index + 1}</h4>
+                    <pre>${script}</pre>
+                    <button onclick="copyToClipboard('${script}')">Copy Script</button>
+                `;
+                savedScriptsContainer.appendChild(scriptDiv);
+            });
+        }
+
+        function copyToClipboard(script) {
+            const textarea = document.createElement('textarea');
+            textarea.value = script;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Script copied to clipboard!');
         }
     </script>
 </body>
