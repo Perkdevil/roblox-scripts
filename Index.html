@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <title>Roblox Scripts</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #232323;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        main {
+            padding: 10px;
+        }
+        .script-container, .download-section {
+            background-color: #2b2b2b;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            background-color: #1f1f1f;
+            color: #f5f5f5;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+        }
+        button {
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #005ea6;
+        }
+        .download-item a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+        .download-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design for Mobile and iPhone Screens */
+        @media only screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            textarea {
+                height: 120px;
+            }
+            button {
+                padding: 8px 15px;
+            }
+        }
+        @media (orientation: landscape) {
+            textarea {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Roblox Scripts</h1>
+        <p>Your go-to site for scripts and downloads.</p>
+    </header>
+    <main>
+        <div class="script-container">
+            <h2>Save and Copy Text</h2>
+            <textarea id="scriptInput" placeholder="Type or paste your text here..."></textarea>
+            <button onclick="copyText()">Copy to Clipboard</button>
+            <button onclick="saveText()">Save to Discord</button>
+        </div>
+        
+        <div class="download-section">
+            <h2>Downloads</h2>
+            <div class="download-item">
+                <a href="file1.zip" download>Download Script 1</a>
+            </div>
+            <div class="download-item">
+                <a href="file2.zip" download>Download Script 2</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function copyText() {
+            const text = document.getElementById('scriptInput');
+            text.select();
+            document.execCommand('copy');
+            alert('Text copied to clipboard!');
+        }
+
+        function saveText() {
+            const text = document.getElementById('scriptInput').value;
+            const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL"; // Replace with your actual webhook URL
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: "New Text File:",
+                    embeds: [{
+                        description: `\`\`\`${text}\`\`\``
+                    }]
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Text saved to Discord successfully!');
+                } else {
+                    alert('Failed to send text to Discord.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred.');
+            });
+        }
+    </script>
+</body>
+</html>
