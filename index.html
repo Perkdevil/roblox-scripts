@@ -156,6 +156,8 @@
                 <button class="tab-button active" onclick="showTab('scripts')">Scripts</button>
                 <button class="tab-button" onclick="showTab('downloads')">Downloads</button>
                 <button class="tab-button" onclick="showTab('chat')">Chat Room</button>
+                <!-- New Tab for Bypasser -->
+                <button class="tab-button" onclick="showTab('bypasser')">Bypasser</button>
             </div>
 
             <!-- Script Tab Content -->
@@ -200,6 +202,13 @@
                     <button onclick="sendPrivateMessage()">Send Private Message</button>
                 </div>
             </div>
+
+            <!-- Bypasser Tab Content -->
+            <div class="tab-content bypasser" id="bypasser">
+                <h2>Bypass Websites</h2>
+                <p>Click below to visit the bypasser website:</p>
+                <a href="https://bypasser.vip" target="_blank">Visit Bypasser.vip</a>
+            </div>
         </div>
     </main>
 
@@ -232,16 +241,10 @@
         let loggedIn = false;
         let isOwner = false;
         let privateMessagingEnabled = true;
+        let userScripts = [];
+        let userMessages = [];
 
-        // Settings Functions
-        function openSettings() {
-            document.getElementById('settingsPage').style.display = 'block';
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsPage').style.display = 'none';
-        }
-
+        // Toggle between light and dark mode
         function toggleTheme() {
             const body = document.body;
             const button = document.querySelector('.settings-page button');
@@ -256,36 +259,37 @@
             }
         }
 
-        function togglePrivateMessaging() {
-            privateMessagingEnabled = !privateMessagingEnabled;
-            const button = document.querySelector('.settings-page button:nth-child(3)');
-            if (privateMessagingEnabled) {
-                button.innerText = 'Disable Private Messaging';
-            } else {
-                button.innerText = 'Enable Private Messaging';
-            }
+        // Handle tab switching
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            const activeButton = Array.from(buttons).find(button => button.textContent.toLowerCase() === tabName);
+            activeButton.classList.add('active');
         }
 
-        function viewAllAccounts() {
-            if (!isOwner) {
-                alert('You are not authorized to view accounts.');
-                return;
-            }
-            alert('Displaying all accounts... (This is just a simulation.)');
+        // Open settings page
+        function openSettings() {
+            document.getElementById('settingsPage').style.display = 'block';
         }
 
-        // Save Script and Display
-        let savedScripts = [];
+        // Close settings page
+        function closeSettings() {
+            document.getElementById('settingsPage').style.display = 'none';
+        }
 
+        // Handle script saving
         function saveText() {
-            const text = document.getElementById('scriptInput').value;
-            if (text.trim() === '') {
-                alert('Please enter a script to save.');
+            const script = document.getElementById('scriptInput').value;
+            if (script.trim() === '') {
+                alert('Please enter a script!');
                 return;
             }
-            savedScripts.push(text);
-            displaySavedScripts(savedScripts);
-            alert('Script saved successfully!');
+            userScripts.push(script);
+            saveDataToLocalStorage();
+            displaySavedScripts(userScripts);
         }
 
         function displaySavedScripts(scripts) {
@@ -303,7 +307,8 @@
             });
         }
 
-        function copyToClipboard(script) {
+        function copyText() {
+            const script = document.getElementById('scriptInput').value;
             const textarea = document.createElement('textarea');
             textarea.value = script;
             document.body.appendChild(textarea);
@@ -313,10 +318,30 @@
             alert('Script copied to clipboard!');
         }
 
-        // Public Chat
+        // LocalStorage Handling
+        function saveDataToLocalStorage() {
+            localStorage.setItem('userScripts', JSON.stringify(userScripts));
+            localStorage.setItem('userMessages', JSON.stringify(userMessages));
+        }
+
+        function loadDataFromLocalStorage() {
+            const savedScripts = localStorage.getItem('userScripts');
+            const savedMessages = localStorage.getItem('userMessages');
+            if (savedScripts) {
+                userScripts = JSON.parse(savedScripts);
+            }
+            if (savedMessages) {
+                userMessages = JSON.parse(savedMessages);
+            }
+            displaySavedScripts(userScripts);
+        }
+
+        // Public and Private Message Functions
         function sendPublicMessage() {
             const message = document.getElementById('publicChatInput').value;
             if (message.trim()) {
+                userMessages.push(message);
+                saveDataToLocalStorage();
                 const publicMessages = document.getElementById('publicChatMessages');
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message');
@@ -326,19 +351,25 @@
             }
         }
 
-        // Private Chat
         function sendPrivateMessage() {
             if (!privateMessagingEnabled) {
                 alert('Private messaging is disabled.');
                 return;
             }
             const message = document.getElementById('privateChatInput').value;
+            userMessages.push(message);
+            saveDataToLocalStorage();
             const privateMessages = document.getElementById('privateChatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.textContent = message;
             privateMessages.appendChild(messageDiv);
             document.getElementById('privateChatInput').value = '';
+        }
+
+        // Load data on page load
+        window.onload = function() {
+            loadDataFromLocalStorage();
         }
     </script>
 </body>
