@@ -1,30 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Firebase SDK -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-analytics.js";
-  
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCuVCK3BclwZdP3k6LbDH6sOvSP2fgmB6g",
-    authDomain: "roblox-69bb6.firebaseapp.com",
-    projectId: "roblox-69bb6",
-    storageBucket: "roblox-69bb6.firebasestorage.app",
-    messagingSenderId: "474257657474",
-    appId: "1:474257657474:web:3784ad312acae14bb82e9b",
-    measurementId: "G-15XVK09P77"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-  // Your custom Firebase logic will go here (authentication, database access, etc.)
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, initial-scale=1, maximum-scale=1">
     <title>Roblox Scripts</title>
@@ -83,86 +59,87 @@
             padding: 10px;
         }
 
-        /* Settings Page */
-        .settings-page {
+        /* Chat Section Styles */
+        .chat-room {
             background-color: #2b2b2b;
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
-            margin: 20px auto;
-            max-width: 400px;
-        }
-        .settings-page input {
-            width: 100%;
-            padding: 10px;
             margin: 10px 0;
-            border-radius: 4px;
-            background-color: #1f1f1f;
-            color: #f5f5f5;
-            border: none;
         }
-        .settings-page button {
-            width: 100%;
-            padding: 10px;
-            background-color: #0078d7;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .messages {
+            max-height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
         }
-        .settings-page button:hover {
-            background-color: #005ea6;
+        .message {
+            margin-bottom: 10px;
         }
-
-        /* Light Mode */
-        body.light-mode {
-            background-color: #f5f5f5;
-            color: #333;
+        .message span {
+            font-weight: bold;
+            color: #0078d7;
         }
-        body.light-mode header {
-            background-color: #fff;
-        }
-        body.light-mode .tabs button {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        body.light-mode .tabs button.active {
-            background-color: #0078d7;
-            color: white;
-        }
-        body.light-mode .settings-page {
-            background-color: #fff;
-            color: #333;
-        }
-        body.light-mode .settings-page input {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-        /* Dark Mode */
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #f5f5f5;
-        }
-        body.dark-mode header {
-            background-color: #232323;
-        }
-        body.dark-mode .tabs button {
-            background-color: #2b2b2b;
-            color: #f5f5f5;
-        }
-        body.dark-mode .tabs button.active {
-            background-color: #0078d7;
-        }
-        body.dark-mode .settings-page {
-            background-color: #2b2b2b;
-            color: #f5f5f5;
-        }
-        body.dark-mode .settings-page input {
-            background-color: #1f1f1f;
+        .message p {
+            margin: 0;
             color: #f5f5f5;
         }
 
     </style>
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuVCK3BclwZdP3k6LbDH6sOvSP2fgmB6g",
+            authDomain: "roblox-69bb6.firebaseapp.com",
+            projectId: "roblox-69bb6",
+            storageBucket: "roblox-69bb6.firebasestorage.app",
+            messagingSenderId: "474257657474",
+            appId: "1:474257657474:web:3784ad312acae14bb82e9b",
+            measurementId: "G-15XVK09P77"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Function to save script to Firestore
+        async function saveScriptToFirestore(scriptContent) {
+            try {
+                const docRef = await addDoc(collection(db, "scripts"), {
+                    content: scriptContent,
+                    timestamp: new Date(),
+                });
+                console.log("Script saved with ID: ", docRef.id);
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        }
+
+        // Function to handle user login
+        async function login(email, password) {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("User logged in:", userCredential.user);
+            } catch (error) {
+                console.error("Error logging in: ", error);
+            }
+        }
+
+        // Function to handle user signup
+        async function signUp(email, password) {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log("User signed up:", userCredential.user);
+            } catch (error) {
+                console.error("Error signing up: ", error);
+            }
+        }
+    </script>
 </head>
 <body class="dark-mode">
     <header>
@@ -180,7 +157,6 @@
                 <button class="tab-button active" onclick="showTab('scripts')">Scripts</button>
                 <button class="tab-button" onclick="showTab('downloads')">Downloads</button>
                 <button class="tab-button" onclick="showTab('chat')">Chat Room</button>
-                <!-- New Tab for Bypasser -->
                 <button class="tab-button" onclick="showTab('bypasser')">Bypasser</button>
             </div>
 
@@ -236,54 +212,41 @@
         </div>
     </main>
 
-    <!-- Settings Page -->
-    <div id="settingsPage" class="settings-page" style="display: none;">
-        <h2>Settings</h2>
-
-        <!-- Dark/Light Mode Toggle -->
-        <div>
-            <h3>Theme</h3>
-            <button onclick="toggleTheme()">Switch to Light Mode</button>
-        </div>
-
-        <!-- Private/Public Messaging -->
-        <div>
-            <h3>Private Messaging</h3>
-            <button onclick="togglePrivateMessaging()">Enable Private Messaging</button>
-        </div>
-
-        <!-- Owner Tab: Account Management -->
-        <div id="accountManagementTab" style="display: none;">
-            <h3>Account Management (Owner Only)</h3>
-            <button onclick="viewAllAccounts()">View All Accounts</button>
-        </div>
-        
-        <button onclick="closeSettings()">Close</button>
-    </div>
-
     <script>
-        let loggedIn = false;
-        let isOwner = false;
+        let loggedIn = true; // Assume the user is logged in
+        let username = "User123"; // Example username, should be dynamic based on login
         let privateMessagingEnabled = true;
         let userScripts = [];
         let userMessages = [];
 
-        // Toggle between light and dark mode
-        function toggleTheme() {
-            const body = document.body;
-            const button = document.querySelector('.settings-page button');
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
-                button.innerText = 'Switch to Dark Mode';
-            } else {
-                body.classList.remove('light-mode');
-                body.classList.add('dark-mode');
-                button.innerText = 'Switch to Light Mode';
-            }
+        // Handle saving the script
+        function saveText() {
+            const scriptContent = document.getElementById("scriptInput").value;
+            saveScriptToFirestore(scriptContent); // Save to Firestore
+            userScripts.push(scriptContent);
+            displaySavedScripts();
+            document.getElementById("scriptInput").value = '';
         }
 
-        // Handle tab switching
+        // Handle copy text
+        function copyText() {
+            const scriptContent = document.getElementById("scriptInput");
+            scriptContent.select();
+            document.execCommand("copy");
+        }
+
+        // Display saved scripts
+        function displaySavedScripts() {
+            const savedScriptsContainer = document.getElementById("savedScripts");
+            savedScriptsContainer.innerHTML = '';
+            userScripts.forEach((script, index) => {
+                const scriptDiv = document.createElement("div");
+                scriptDiv.textContent = `Script ${index + 1}: ${script}`;
+                savedScriptsContainer.appendChild(scriptDiv);
+            });
+        }
+
+        // Tab switching logic
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
@@ -292,108 +255,6 @@
             document.getElementById(tabName).classList.add('active');
             const activeButton = Array.from(buttons).find(button => button.textContent.toLowerCase() === tabName);
             activeButton.classList.add('active');
-        }
-
-        // Open settings page
-        function openSettings() {
-            document.getElementById('settingsPage').style.display = 'block';
-        }
-
-        // Close settings page
-        function closeSettings() {
-            document.getElementById('settingsPage').style.display = 'none';
-        }
-
-        // Handle script saving
-        function saveText() {
-            const script = document.getElementById('scriptInput').value;
-            if (script.trim() === '') {
-                alert('Please enter a script!');
-                return;
-            }
-            userScripts.push(script);
-            saveDataToLocalStorage();
-            displaySavedScripts(userScripts);
-        }
-
-        function displaySavedScripts(scripts) {
-            const savedScriptsContainer = document.getElementById('savedScripts');
-            savedScriptsContainer.innerHTML = '<h3>Saved Scripts:</h3>';
-            scripts.forEach((script, index) => {
-                const scriptDiv = document.createElement('div');
-                scriptDiv.classList.add('saved-script');
-                scriptDiv.innerHTML = `
-                    <h4>Script ${index + 1}</h4>
-                    <pre>${script}</pre>
-                    <button onclick="copyToClipboard('${script}')">Copy Script</button>
-                `;
-                savedScriptsContainer.appendChild(scriptDiv);
-            });
-        }
-
-        function copyText() {
-            const script = document.getElementById('scriptInput').value;
-            const textarea = document.createElement('textarea');
-            textarea.value = script;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert('Script copied to clipboard!');
-        }
-
-        // LocalStorage Handling
-        function saveDataToLocalStorage() {
-            localStorage.setItem('userScripts', JSON.stringify(userScripts));
-            localStorage.setItem('userMessages', JSON.stringify(userMessages));
-        }
-
-        function loadDataFromLocalStorage() {
-            const savedScripts = localStorage.getItem('userScripts');
-            const savedMessages = localStorage.getItem('userMessages');
-            if (savedScripts) {
-                userScripts = JSON.parse(savedScripts);
-            }
-            if (savedMessages) {
-                userMessages = JSON.parse(savedMessages);
-            }
-            displaySavedScripts(userScripts);
-        }
-
-        // Public and Private Message Functions
-        function sendPublicMessage() {
-            const message = document.getElementById('publicChatInput').value;
-            if (message.trim()) {
-                userMessages.push(message);
-                saveDataToLocalStorage();
-                const publicMessages = document.getElementById('publicChatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
-                messageDiv.textContent = message;
-                publicMessages.appendChild(messageDiv);
-                document.getElementById('publicChatInput').value = '';
-            }
-        }
-
-        function sendPrivateMessage() {
-            if (!privateMessagingEnabled) {
-                alert('Private messaging is disabled.');
-                return;
-            }
-            const message = document.getElementById('privateChatInput').value;
-            userMessages.push(message);
-            saveDataToLocalStorage();
-            const privateMessages = document.getElementById('privateChatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.textContent = message;
-            privateMessages.appendChild(messageDiv);
-            document.getElementById('privateChatInput').value = '';
-        }
-
-        // Load data on page load
-        window.onload = function() {
-            loadDataFromLocalStorage();
         }
     </script>
 </body>
