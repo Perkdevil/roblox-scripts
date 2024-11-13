@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Firebase SDK -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-analytics.js";
+  
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuVCK3BclwZdP3k6LbDH6sOvSP2fgmB6g",
+    authDomain: "roblox-69bb6.firebaseapp.com",
+    projectId: "roblox-69bb6",
+    storageBucket: "roblox-69bb6.firebasestorage.app",
+    messagingSenderId: "474257657474",
+    appId: "1:474257657474:web:3784ad312acae14bb82e9b",
+    measurementId: "G-15XVK09P77"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // Your custom Firebase logic will go here (authentication, database access, etc.)
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, initial-scale=1, maximum-scale=1">
     <title>Roblox Scripts</title>
